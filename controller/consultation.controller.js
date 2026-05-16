@@ -5,6 +5,43 @@ exports.createConsultation = async (req, res) => {
     const data = await service.createConsultation(req.body);
     res.status(201).json({ success: true, data });
   } catch (error) {
-    res.status(500).json({ success: false });
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.getConsultations = async (req, res) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(req.query.limit, 10) || 10)
+    );
+    const result = await service.listConsultations({ page, limit });
+    res.json({
+      success: true,
+      data: result.items,
+      meta: {
+        total: result.total,
+        page: result.page,
+        limit: result.limit,
+        totalPages: result.totalPages,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.deleteConsultation = async (req, res) => {
+  try {
+    const result = await service.deleteConsultation(req.params.id);
+    if (!result) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Consultation not found" });
+    }
+    res.json({ success: true, message: "Consultation deleted" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
