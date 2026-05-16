@@ -112,13 +112,22 @@ exports.createBlog = async (req, res) => {
   }
 };
 
+const withCoverUrl = (req, doc) => {
+  const obj = doc.toObject ? doc.toObject() : doc;
+  if (obj.coverFilename) {
+    obj.coverImage = `${req.protocol}://${req.get("host")}/uploads/blog/${obj.coverFilename}`;
+  }
+  return obj;
+};
+
 exports.getBlogs = async (req, res) => {
   try {
     const filter = {};
     if (req.query.status) filter.status = req.query.status;
     if (req.query.category) filter.category = req.query.category;
     const blogs = await service.getBlogs(filter);
-    res.json({ success: true, data: blogs });
+    const data = blogs.map((b) => withCoverUrl(req, b));
+    res.json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -132,7 +141,7 @@ exports.getBlog = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Blog not found" });
     }
-    res.json({ success: true, data: blog });
+    res.json({ success: true, data: withCoverUrl(req, blog) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

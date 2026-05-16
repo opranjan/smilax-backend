@@ -58,7 +58,15 @@ exports.uploadImage = async (req, res) => {
 exports.getImages = async (req, res) => {
   try {
     const images = await service.getImages(req.query.category);
-    res.json({ success: true, data: images });
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const data = images.map((img) => {
+      const obj = img.toObject ? img.toObject() : img;
+      if (obj.filename) {
+        obj.url = `${baseUrl}/uploads/gallery/${obj.filename}`;
+      }
+      return obj;
+    });
+    res.json({ success: true, data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
