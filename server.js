@@ -4,6 +4,9 @@ const cors = require("cors");
 const path = require("path");
 const connectDB = require("./config/db");
 
+const googleReviewRoutes = require("./routes/googlereview.routes");
+
+
 dotenv.config();
 connectDB();
 
@@ -23,6 +26,8 @@ app.use("/api/contacts", require("./routes/contact.routes"));
 app.use("/api/gallery", require("./routes/gallery.routes"));
 app.use("/api/blogs", require("./routes/blog.routes"));
 app.use("/api/dashboard", require("./routes/dashboard.routes"));
+app.use("/api/googleReviews", googleReviewRoutes);
+
 
 const PORT = process.env.PORT || 5000;
 
