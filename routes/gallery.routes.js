@@ -13,6 +13,13 @@ router.post(
   controller.upload.single("image"),
   controller.uploadImage
 );
+router.put("/reorder", requireAdmin, controller.reorderImages);
+router.put(
+  "/:id",
+  requireAdmin,
+  controller.upload.single("image"),
+  controller.replaceImage
+);
 router.delete("/:id", requireAdmin, controller.deleteImage);
 
 module.exports = router;

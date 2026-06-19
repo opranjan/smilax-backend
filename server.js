@@ -24,6 +24,7 @@ app.use("/api/appointments", require("./routes/appointment.routes"));
 app.use("/api/consultations", require("./routes/consultation.routes"));
 app.use("/api/contacts", require("./routes/contact.routes"));
 app.use("/api/gallery", require("./routes/gallery.routes"));
+app.use("/api/banners", require("./routes/banner.routes"));
 app.use("/api/blogs", require("./routes/blog.routes"));
 app.use("/api/dashboard", require("./routes/dashboard.routes"));
 app.use("/api/googleReviews", googleReviewRoutes);

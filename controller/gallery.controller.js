@@ -72,6 +72,61 @@ exports.getImages = async (req, res) => {
   }
 };
 
+exports.reorderImages = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "ids must be a non-empty array" });
+    }
+    await service.reorderImages(ids);
+    res.json({ success: true, message: "Order updated" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.replaceImage = async (req, res) => {
+  try {
+    const image = await service.getImageById(req.params.id);
+    if (!image) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Image not found" });
+    }
+
+    const update = {};
+
+    // If a new file was uploaded, swap it in and remove the old one.
+    if (req.file) {
+      const oldPath = path.join(uploadDir, image.filename);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+      }
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      update.filename = req.file.filename;
+      update.originalName = req.file.originalname;
+      update.url = `${baseUrl}/uploads/gallery/${req.file.filename}`;
+    }
+
+    if (req.body.category) {
+      update.category = req.body.category;
+    }
+
+    if (Object.keys(update).length === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Nothing to update" });
+    }
+
+    const updated = await service.updateImage(req.params.id, update);
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 exports.deleteImage = async (req, res) => {
   try {
     const image = await service.getImageById(req.params.id);

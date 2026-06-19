@@ -10,6 +10,7 @@ const gallerySchema = new mongoose.Schema(
       enum: ["clinic", "treatment", "beforeafter", "team"],
       default: "clinic",
     },
+    order: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
